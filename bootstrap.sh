@@ -17,7 +17,7 @@ BASEPATH=$( cd $(dirname $0); pwd -P);  # Current path
 KEEP_FILES=true;
 DEBUG=false;
 
-inc=$BASEPATH/functions.sh ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $inc not found" 1>&2 ; exit 1 ; fi ;
+inc=$BASEPATH/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $inc not found" 1>&2 ; exit 1 ; fi ;
 
 ################## config ##################
 getSettings $BASEPATH/config/default.conf;

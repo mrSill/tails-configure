@@ -7,7 +7,7 @@
 ## @github    https://github.com/mrsill/tails-configure
 ## @version   Look in 'bootstrap.sh'
 
-inc=$(dirname $0)/functions.sh ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $a1 not found" 1>&2 ; exit 1 ; fi ;
+inc=$(dirname $0)/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $a1 not found" 1>&2 ; exit 1 ; fi ;
 
 ################## config ##################
 getSettings $(dirname $0)/config/default.conf;

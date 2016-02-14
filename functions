@@ -1,12 +1,10 @@
-#!/bin/bash
-
 ## @author    Aliaksandr Sidaruk
 ## @project   Tails configure
 ## @package   Include Functions
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   Look in 'bootstrap.sh'
+## @version   Look in 'tails-setup.sh'
 
 cRed='\e[1;31m'; cGreen='\e[0;32m'; cNone='\e[0m'; cYel='\e[1;33m';
 cBlue='\e[1;34m'; cGray='\e[1;30m'; cMagenta='\e[;35m'
@@ -60,30 +58,18 @@ checkParm()
    fi
 }
 
-## Print Logo
-printLogo()
+isRoot()
 {
-    if [ -f ${1} ] ; then
-        local logoContent=$(cat ${1});
-        echo -e "${cMagenta}${logoContent}${cNone}";
-    fi;
+  if [[ "$(id -u)" == 0 ]]; then
+    return 0;
+  else
+    return 1;
+  fi;
 }
-## Print helpe
-printHelp()
+hint()
 {
-    echo "Use this script to install/update Tails system"
-    echo ""
-    echo "usage:"
-    echo "    ${0} PARAMETERS"
-    echo ""
-    echo "parameters:"
-    echo "    --debug                : force set debug mode"
-
-    echo "    -h|--help              : displays this help"
-    echo "    -k|--keep              : keep files after installation/update"
-    echo ""
-    echo "example usages:"
-    echo "    ${0}"
+  local message=$1;
+  echo -e "${cYel}Hint${cNone}: ${message}\n";
 }
 
 ############ logging functions #############
@@ -280,11 +266,74 @@ checkFile()
       exit 1
    fi
 }
+fileSize()
+{
+  return $(stat -c%s "$1");
+}
+############### apt functions ##############
+aptAddSource()
+{
+  local sourceListFile=$1;
+  local sourceRepositoryUrl=$2;
+  local sourceDistridution=$3;
+  local sourceComponent=$4;
 
-############# helper functions #############
+  if isRoot; then
+    echo "deb ${sourceRepositoryUrl} ${sourceDistridution} ${sourceComponent}" | tee /etc/apt/sources.list.d/${sourceListFile} 1>&2;
+    chmod 655 /etc/apt/sources.list.d/${sourceListFile};
+  else
+    echo "deb ${sourceRepositoryUrl} ${sourceDistridution} ${sourceComponent}" | sudo tee /etc/apt/sources.list.d/${sourceListFile} 1>&2;
+    sudo chmod 655 /etc/apt/sources.list.d/${sourceListFile};
+  fi;
+  ## Check result
+  if [ $? -ne 0 ] ; then
+    return 1;
+  else
+    return 0;
+  fi;
+}
+
+aptAddKey()
+{
+  local keyHostname=$1;
+  local keyFilename=$2;
+
+  if isRoot; then
+    wget -qO - ${keyHostname}/${keyFilename} | apt-key add - 1>&2;
+  else
+    wget -qO - ${keyHostname}/${keyFilename} | sudo apt-key add - 1>&2;
+  fi;
+  ## Check result
+  if [ $? -ne 0 ] ; then
+    return 1;
+  else
+    return 0;
+  fi;
+}
+
+############# netfilter functions #############
 netfilterSetDefault()
 {
     if [ -f ${1} ] ; then
         ferm ${1} 1>&2;
     fi;
+}
+
+configureNetfilter()
+{
+  local protocol=$1;
+  local port=$2;
+
+  echo -n "Configure netfilter...";
+  #allow traffic going specific outbound ports
+  iptables -A OUTPUT -p ${protocol} --dport ${port} -j ACCEPT
+  iptables -A INPUT -p ${protocol} --sport ${port} -j ACCEPT
+  ## Check result
+  if [ $? -ne 0 ] ; then
+    echo -e "${cRed}Fail${cNone}";
+    return 1;
+  else
+    echo -e "${cGreen}Complete${cNone}";
+    return 0;
+  fi;
 }

@@ -10,7 +10,7 @@
 BASEPATH=$( cd $(dirname $0); pwd -P);
 pushd $BASEPATH >/dev/null;
 
-inc=$BASEPATH/functions.sh ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $a1 not found" 1>&2 ; exit 1 ; fi ;
+inc=$BASEPATH/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $a1 not found" 1>&2 ; exit 1 ; fi ;
 
 ## default values for user given parameters
 DEBUG=false;
