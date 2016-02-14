@@ -18,19 +18,29 @@ readonly TEAMVIEWER_DOWNLOAD_PATH="http://download.teamviewer.com/download"
 readonly TEAMVIEWER_VERSION="9x"
 readonly TEAMVIEWER_REMOTE_PACKAGE_NAME="teamviewer_linux.deb"
 readonly TEAMVIEWER_LOCAL_PACKAGE_NAME="teamviewer${TEAMVIEWER_VERSION}_linux.deb"
+############################################
 
-readonly DPKG="${PATHTOSAVE}/${TEAMVIEWER_LOCAL_PACKAGE_NAME}"
+downloadAndInstall()
+{
+    local $url=$1;
+    wget -qO - $url | dpkg -i;
+}
 
 if isRoot; then
-    dpkg -i $DPKG;
+    if [ ! -e ${PATHTOSAVE}/${TEAMVIEWER_LOCAL_PACKAGE_NAME} ]; then
+        downloadAndInstall ${TEAMVIEWER_DOWNLOAD_PATH}/version_${TEAMVIEWER_VERSION}/${TEAMVIEWER_REMOTE_PACKAGE_NAME};
+    else
+        dpkg -i $PATHTOSAVE/${TEAMVIEWER_LOCAL_PACKAGE_NAME};
+    fi;
+
     netfilterSetDefault $BASEPATH/config/ferm.conf;
     configureNetfilter tcp 5938;
 else
     ############# download package #############
-    if [ ! -e ${DPKG} ]; then
+    if [ ! -e ${PATHTOSAVE}/${TEAMVIEWER_LOCAL_PACKAGE_NAME} ]; then
         echo -n "Download Teamviewer ${TEAMVIEWER_VERSION} package..";
         downloadFile ${TEAMVIEWER_DOWNLOAD_PATH}/version_${TEAMVIEWER_VERSION}/${TEAMVIEWER_REMOTE_PACKAGE_NAME} $PATHTOSAVE;
-        mv $PATHTOSAVE/$TEAMVIEWER_REMOTE_PACKAGE_NAME $DPKG;
+        mv $PATHTOSAVE/$TEAMVIEWER_REMOTE_PACKAGE_NAME $PATHTOSAVE/${TEAMVIEWER_LOCAL_PACKAGE_NAME};
     fi
 
     sudo $BASEPATH/teamviewer.sh;
