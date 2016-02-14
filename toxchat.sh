@@ -45,7 +45,7 @@ graphical interfaces.\n\n";
 }
 toxModuleCheckInstalledClients()
 {
-    local existToxClients=[qtox utox toxic];
+    local existToxClients=(qtox utox toxic);
 
     for toxClient in "${existToxClients[@]}"; do
         if which toxClient 1>&2; then
