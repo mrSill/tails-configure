@@ -14,7 +14,7 @@ inc=$_PATH_/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error
 
 ################## config ##################
 persistentPkgConfig="/live/persistence/TailsData_unlocked/live-additional-software.conf";
-persistentPkg=('apt-transport-https');
+persistentPkg=();
 ############################################
 
 hint "This is an experimental feature which does not appear in the assistant.\n";
