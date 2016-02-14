@@ -6,12 +6,12 @@
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   Look in 'tails-setup.sh'
+## @version   Look in 'VERSION'
 
 set -o nounset
 set -o errexit
 
-readonly VERSION="0.1";
+readonly VERSION=$(cat VERSION); 
 readonly _PATH_=$( cd $(dirname $0); pwd -P);  # Current path
 
 inc=$_PATH_/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $inc not found" 1>&2 ; exit 1 ; fi ;
@@ -42,6 +42,7 @@ printHelp()
     echo ""
     echo "parameters:"
     echo "    --debug                : force set debug mode"
+    echo "    -v|--version           : show current version"
 
     echo "    -h|--help              : displays this help"
     echo "    -k|--keep              : keep files after installation/update"
@@ -58,6 +59,9 @@ while [ $# -ge 1 ] ; do
         shift
     elif [ ${1} = "-k" -o ${1} = "--keep" ]; then
         KEEP_FILES=true
+        shift
+    elif [ ${1} = "-v" -o ${1} = "--version" ]; then
+        echo "${VERSION}";
         shift
     else
         if [ ${1} != "-h" -a ${1} != "--help" ] ; then
@@ -110,9 +114,9 @@ read -n 1 doing;
 case $doing in
     1) echo -e "\nTo continue, you need root.\n";
        sudo $BASEPATH/persistent.sh $@;;
-    2) echo -e "\n";
+    2) echo "";
        $BASEPATH/teamviewer.sh $@;;
-    3) echo -e "\n";
+    3) echo "";
        $BASEPATH/toxchat.sh $@;;
     *) exit 1;;
 esac;

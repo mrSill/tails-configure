@@ -5,7 +5,7 @@
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   Look in 'settings.cfg'
+## @version   Look in 'VERSION'
 
 #BASEPATH=$( cd $(dirname $0); pwd -P);
 pushd $( cd $(dirname $0); pwd -P) >/dev/null;

@@ -6,7 +6,7 @@
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   Look in 'settings.cfg'
+## @version   Look in 'VERSION'
 
 readonly _PATH_=$( cd $(dirname $0); pwd -P);  # Current path
 

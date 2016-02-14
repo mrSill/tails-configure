@@ -6,7 +6,7 @@
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   0.1
+## @version   Look in 'VERSION'
 
 set -o nounset
 set -o errexit

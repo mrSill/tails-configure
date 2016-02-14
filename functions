@@ -4,7 +4,7 @@
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   Look in 'tails-setup.sh'
+## @version   Look in 'VERSION'
 
 cRed='\e[1;31m'; cGreen='\e[0;32m'; cNone='\e[0m'; cYel='\e[1;33m';
 cBlue='\e[1;34m'; cGray='\e[1;30m'; cMagenta='\e[;35m'
