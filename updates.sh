@@ -5,12 +5,12 @@
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   Look in 'bootstrap.sh'
+## @version   Look in 'settings.cfg'
 
-BASEPATH=$( cd $(dirname $0); pwd -P);
-pushd $BASEPATH >/dev/null;
+#BASEPATH=$( cd $(dirname $0); pwd -P);
+pushd $( cd $(dirname $0); pwd -P) >/dev/null;
 
-inc=$BASEPATH/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $a1 not found" 1>&2 ; exit 1 ; fi ;
+inc=functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $a1 not found" 1>&2 ; exit 1 ; fi ;
 
 ## default values for user given parameters
 DEBUG=false;

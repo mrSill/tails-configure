@@ -1,53 +1,37 @@
 #!/bin/bash
 
 ## @author    Aliaksandr Sidaruk
-## @project   Tails configure teamviewer
+## @project   Tails configure
+## @package   Teamviewer
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   Look in 'bootstrap.sh'
+## @version   Look in 'settings.cfg'
 
-inc=$(dirname $0)/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $inc not found" 1>&2 ; exit 1 ; fi ;
+readonly _PATH_=$( cd $(dirname $0); pwd -P);  # Current path
 
-################## config ##################
-getSettings $(dirname $0)/config/default.conf;
-
-configureNetfilter()
-{
-    #set default
-    netfilterSetDefault $BASEPATH/config/ferm.conf;
-
-    #allow traffic going specific outbound ports
-    iptables -A OUTPUT -p tcp --dport 5938 -j ACCEPT
-    iptables -A INPUT -p tcp --sport 5938 -j ACCEPT
-}
+inc=$_PATH_/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $inc not found" 1>&2 ; exit 1 ; fi ;
+getSettings $_PATH_/config/default.conf;
 
 ################ parameters ################
-TEAMVIEWER_DOWNLOAD_PATH="http://download.teamviewer.com/download"
-TEAMVIEWER_VERSION="9x"
-TEAMVIEWER_REMOTE_PACKAGE_NAME="teamviewer_linux.deb"
-TEAMVIEWER_LOCAL_PACKAGE_NAME="teamviewer${TEAMVIEWER_VERSION}_linux.deb"
+readonly TEAMVIEWER_DOWNLOAD_PATH="http://download.teamviewer.com/download"
+readonly TEAMVIEWER_VERSION="9x"
+readonly TEAMVIEWER_REMOTE_PACKAGE_NAME="teamviewer_linux.deb"
+readonly TEAMVIEWER_LOCAL_PACKAGE_NAME="teamviewer${TEAMVIEWER_VERSION}_linux.deb"
 
-DPKG="${pathToSave}/${TEAMVIEWER_LOCAL_PACKAGE_NAME}"
+readonly DPKG="${PATHTOSAVE}/${TEAMVIEWER_LOCAL_PACKAGE_NAME}"
 
-if [ "$(id -u)" != "0" ]; then
-
-############# download package #############
-
-	if [ ! -e ${DPKG} ]; then
-	    echo -n "Download Teamviewer ${TEAMVIEWER_VERSION} package..";
-		downloadFile ${TEAMVIEWER_DOWNLOAD_PATH}/version_${TEAMVIEWER_VERSION}/${TEAMVIEWER_REMOTE_PACKAGE_NAME} $pathToSave;
-		mv $pathToSave/$TEAMVIEWER_REMOTE_PACKAGE_NAME $DPKG;
-	fi
-
-	sudo $BASEPATH/teamviewer.sh;
+if isRoot; then
+    dpkg -i $DPKG;
+    netfilterSetDefault $BASEPATH/config/ferm.conf;
+    configureNetfilter tcp 5938;
 else
+    ############# download package #############
+    if [ ! -e ${DPKG} ]; then
+        echo -n "Download Teamviewer ${TEAMVIEWER_VERSION} package..";
+        downloadFile ${TEAMVIEWER_DOWNLOAD_PATH}/version_${TEAMVIEWER_VERSION}/${TEAMVIEWER_REMOTE_PACKAGE_NAME} $PATHTOSAVE;
+        mv $PATHTOSAVE/$TEAMVIEWER_REMOTE_PACKAGE_NAME $DPKG;
+    fi
 
-############## install package #############
-	dpkg -i $DPKG;
-
-############## iptables setup ##############
-    echo -n "Configure netfilter...";
-    configureNetfilter;
-    echo -e "${cGreen}Complete${cNone}";
+    sudo $BASEPATH/teamviewer.sh;
 fi;

@@ -6,21 +6,50 @@
 ## @copyright 2015 <github.com/mrsill>
 ## @license   MIT <http://opensource.org/licenses/MIT>
 ## @github    https://github.com/mrsill/tails-configure
-## @version   0.1
+## @version   Look in 'tails-setup.sh'
 
 set -o nounset
 set -o errexit
 
+readonly VERSION="0.1";
+readonly _PATH_=$( cd $(dirname $0); pwd -P);  # Current path
+
+inc=$_PATH_/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $inc not found" 1>&2 ; exit 1 ; fi ;
+getSettings $_PATH_/config/default.conf;
+
 ################ parameters ################
-BASEPATH=$( cd $(dirname $0); pwd -P);  # Current path
 ## default values for user given parameters
 KEEP_FILES=true;
 DEBUG=false;
+############################################
 
-inc=$BASEPATH/functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $inc not found" 1>&2 ; exit 1 ; fi ;
+############# helper functions #############
+## Print Logo
+printLogo()
+{
+    if [ -f ${1} ] ; then
+        local logoContent=$(cat ${1});
+        echo -e "${cMagenta}${logoContent}${cNone}";
+    fi;
+}
+## Print help
+printHelp()
+{
+    echo "Use this script to install/update Tails system"
+    echo ""
+    echo "usage:"
+    echo "    ${0} PARAMETERS"
+    echo ""
+    echo "parameters:"
+    echo "    --debug                : force set debug mode"
 
-################## config ##################
-getSettings $BASEPATH/config/default.conf;
+    echo "    -h|--help              : displays this help"
+    echo "    -k|--keep              : keep files after installation/update"
+    echo ""
+    echo "example usages:"
+    echo "    ${0}"
+}
+############################################
 
 ########## parse input parameters ##########
 while [ $# -ge 1 ] ; do
@@ -33,7 +62,7 @@ while [ $# -ge 1 ] ; do
     else
         if [ ${1} != "-h" -a ${1} != "--help" ] ; then
             echo "[ERROR] Unknown parameter \"${1}\""
-            echo ""
+            echo "See all available parameters: ${0} --help"
         fi
 
         # print help
@@ -41,28 +70,30 @@ while [ $# -ge 1 ] ; do
         exit 1
     fi
 done;
+############################################
 
-############ print debug output ############
-if [ $DEBUG = "true" ]; then
+################ debug info ################
+if [[ $DEBUG == true ]]; then
     echo "########### DEBUG INFO ###########";
-    logmessage -n "Parameters:                 : ${params}";
-    logmessage -n "debug:                      : ${DEBUG}";
-    logmessage -n "keep files                  : ${KEEP_FILES}";
-    echo "";
+    echo "Parameters:                 : $@";
+    echo "debug:                      : ${DEBUG}";
+    echo "keep files                  : ${KEEP_FILES}";
+    echo "############################################";
 fi;
+############################################
 
 ############### prepare step ###############
-createDir $pathToSave;
+createDir $PATHTOSAVE;
 
 ## Run update module
-if [ "${checkUpdate}" = 'true' ]; then
+if [[ "${CHECK_UPDATE}" == true ]]; then
     ${BASEPATH}/updates.sh $@;
 fi;
 
 ## Clear terminal
-if [ $DEBUG = 'false' ]; then clear; fi;
+if [[ $DEBUG = false ]]; then clear; fi;
 
-################ print logo ################
+## Print logo
 printLogo $BASEPATH/ascii-logo.txt;
 
 ################ print menu ################
@@ -70,29 +101,27 @@ echo ""
 echo "Please select menu item"
 echo ""
 echo "1) Setup persistent packages"
-echo "2) Install/Run Teamviewer"
-echo "3) Install/Run Tox chat"
+echo "2) Install teamviewer package"
+echo "3) Install tox package"
 echo ""
 echo "Select [1-3] to choise menu item. Press other key to exit."
 read -n 1 doing;
 
 case $doing in
-	1) echo "To continue, you need root.";
-	   sudo $BASEPATH/persistent.sh $@;;
-	2) $BASEPATH/teamviewer.sh $@;;
-	3) $BASEPATH/toxchat.sh $@;;
-	*) exit 1;;
+    1) echo -e "\nTo continue, you need root.\n";
+       sudo $BASEPATH/persistent.sh $@;;
+    2) echo -e "\n";
+       $BASEPATH/teamviewer.sh $@;;
+    3) echo -e "\n";
+       $BASEPATH/toxchat.sh $@;;
+    *) exit 1;;
 esac;
+############################################
 
 ############### cleanup step ###############
 ## remove download dir
 if [[ $KEEP_FILES == false ]]; then
-    removeDir $pathToSave;
+    removeDir $PATHTOSAVE;
     remove $LOGFILE;
 fi;
-
-## TEMPORALY ACTIONS
-# Remove old settings
-if [ -f "${BASEPATH}/settings.cfg" ] ; then
-    rm -f ${BASEPATH}/settings.cfg;
-fi;
+############################################
