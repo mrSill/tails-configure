@@ -99,12 +99,15 @@ downloadToxPackage()
     echo "Update list of packages...";
     sudo apt-get update 2>&1;
     echo -n "Download ${packageName}...";
+    cd $PATHTOSAVE 2>&1;
     apt-get download ${packageName} 1>&2
     if [ $? -ne 0 ] ; then
         echo -e "${cRed}fail${cNone}";
+        cd $BASEPATH 2>&1;
         return 1;
     else
         echo -e "${cGreen}complete${cNone}.";
+        cd $BASEPATH 2>&1;
         return 0;
     fi;
 }
