@@ -7,7 +7,6 @@
 ## @github    https://github.com/mrsill/tails-configure
 ## @version   Look in 'VERSION'
 
-#BASEPATH=$( cd $(dirname $0); pwd -P);
 pushd $( cd $(dirname $0); pwd -P) >/dev/null;
 
 inc=functions ; source "$inc" ; if [ $? -ne 0 ] ; then echo "Fatal error! $a1 not found" 1>&2 ; exit 1 ; fi ;

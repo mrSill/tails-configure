@@ -65,8 +65,6 @@ selectToxClient()
     else
         client=$defaultClient;
     fi;
-
-    return $client;
 }
 setToxSource()
 {
@@ -191,17 +189,17 @@ ${cGeen}u - uTox${cNone}/${cBlue}t - Toxic:${cNone}";
 
     #package=$(`find $client*.deb`);
 
-    if find $PATHTOSAVE/$client*.deb &>/dev/null ; then
+    if find "${PATHTOSAVE}/${client}*.deb" 2>/dev/null ; then
+        echo "Found local saved copy ${client} install package \
+(`find ${PATHTOSAVE}/${client}*.deb`).";
+        hint "If not will install this package, manualy delete this file";
+    else
         echo "Setting up APT sources. To continue, you need root";
         setToxSource;
 
         echo "All done to download ${client} package..."
         sayWait;
         downloadToxPackage $client;
-    else
-        echo "Found local saved copy ${client} install package \
-(`find ${PATHTOSAVE}/${client}*.deb`).";
-        hint "If not will install this package, manualy delete this file";
     fi;
 
     askYNE "Who will install the package ${client} (to continue, you need root)?";
