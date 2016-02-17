@@ -98,8 +98,8 @@ downloadToxPackage()
     
     echo "Update list of packages...";
     sudo apt-get update 2>&1;
-    
-    cd $PATHTOSAVE;
+
+    cd $PATHTOSAVE 2>&1;
     echo -n "Download ${packageName}...";
     apt-get download ${packageName} 2>&1
     if [ $? -ne 0 ] ; then
